@@ -30,10 +30,13 @@ up)
   grep -h INSTALL_RC /var/lib/machines/$A/root/install.log /var/lib/machines/$B/root/install.log
   ;;
 configure)
-  # A: room for the head (3 GiB, 4 vCPU) and not for a worker (2 GiB, 4 vCPU) too.
+  # A: room for the head (3 GiB, 4 vCPU, with the overhead of its VM) and not for a
+  # worker (2 GiB, 4 vCPU) too. 3.3e9 B was too small: A gave the head itself to B.
   TOTAL=$(python3 -c 'import os; print(os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES"))')
-  RAM=$(python3 -c "print(round(3.3e9 / $TOTAL, 5))")
-  CPU=$(python3 -c "import os; print(round(4.5 / os.cpu_count(), 4))")
+  RAM=$(python3 -c "print(round(4.5e9 / $TOTAL, 5))")
+  # nodo counts the physical cores for MAX_CPU_SHARE (6 on the 12-thread test host):
+  # "allows 2.25 vCPU" with 0.375. 4.5 vCPU: the head (4) fits, a worker more does not.
+  CPU=${CPU_SHARE:-0.75}
   in_ct $A "nodo config set host_limits.ENABLED=true && nodo config set host_limits.MAX_CPU_SHARE=$CPU && nodo config set host_limits.MAX_RAM_SHARE=$RAM"
   # B: a third of A's prices, so that A's own price covers B (delegated_price.covers).
   in_ct $B "nodo config set pricing.CPU_MU_PER_VCPU_HOUR=1333333 && nodo config set pricing.RAM_MU_PER_GIB_HOUR=333333 && nodo config set pricing.DISK_MU_PER_GIB_HOUR=33333"
