@@ -16,6 +16,8 @@ import time
 
 TICK = os.sysconf("SC_CLK_TCK")
 NAME = re.compile(rb"nodo-ch-([0-9a-f]{8})")
+# The host baseline (no Celaut): the llama.cpp processes themselves.
+HOST = re.compile(rb"/(llama-server|ggml-rpc-server)\x00")
 
 
 def sample():
@@ -25,12 +27,15 @@ def sample():
             continue
         try:
             with open("/proc/%s/cmdline" % pid, "rb") as fh:
-                m = NAME.search(fh.read())
-            if not m:
+                cmdline = fh.read()
+            m = NAME.search(cmdline)
+            h = HOST.search(cmdline)
+            if not m and not h:
                 continue
+            key = m.group(1).decode() if m else "%s-%s" % (h.group(1).decode(), pid)
             with open("/proc/%s/stat" % pid) as fh:
                 fields = fh.read().rsplit(")", 1)[1].split()
-            procs[m.group(1).decode()] = (int(fields[11]) + int(fields[12])) / TICK
+            procs[key] = (int(fields[11]) + int(fields[12])) / TICK
         except OSError:
             continue
     return procs
