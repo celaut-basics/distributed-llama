@@ -1,0 +1,233 @@
+{
+ "host-w0": {
+  "pp_tps": 162.33,
+  "tg_tps": 30.789,
+  "ttft_s": 2.215,
+  "server_ttft_s": 2.214,
+  "cold_start_s": 1.589,
+  "load_tx_mb": 0.0,
+  "answer_net_mb": 0.0,
+  "cpu_total_cores": 3.69,
+  "spent_mu": null,
+  "prompt_tokens": 359.0,
+  "gen_tokens": 128.0,
+  "runs": 3,
+  "modes": [
+   "local"
+  ],
+  "statuses": [
+   "MESSAGE_STATUS_COMPLETED"
+  ],
+  "same_text": true
+ },
+ "host-w1": {
+  "pp_tps": 177.431,
+  "tg_tps": 29.309,
+  "ttft_s": 2.026,
+  "server_ttft_s": 2.026,
+  "cold_start_s": 2.59,
+  "load_tx_mb": 0.0,
+  "answer_net_mb": 0.000141,
+  "cpu_total_cores": 3.64,
+  "spent_mu": null,
+  "prompt_tokens": 359.0,
+  "gen_tokens": 128.0,
+  "runs": 3,
+  "modes": [
+   "distributed"
+  ],
+  "statuses": [
+   "MESSAGE_STATUS_COMPLETED"
+  ],
+  "same_text": true
+ },
+ "host-w2": {
+  "pp_tps": 175.065,
+  "tg_tps": 28.179,
+  "ttft_s": 2.053,
+  "server_ttft_s": 2.053,
+  "cold_start_s": 2.591,
+  "load_tx_mb": 0.0,
+  "answer_net_mb": 0.0,
+  "cpu_total_cores": 3.73,
+  "spent_mu": null,
+  "prompt_tokens": 359.0,
+  "gen_tokens": 128.0,
+  "runs": 3,
+  "modes": [
+   "distributed"
+  ],
+  "statuses": [
+   "MESSAGE_STATUS_COMPLETED"
+  ],
+  "same_text": true
+ },
+ "host-w3": {
+  "pp_tps": 173.954,
+  "tg_tps": 26.909,
+  "ttft_s": 2.067,
+  "server_ttft_s": 2.067,
+  "cold_start_s": 2.624,
+  "load_tx_mb": 0.0,
+  "answer_net_mb": 0.000247,
+  "cpu_total_cores": 4.08,
+  "spent_mu": null,
+  "prompt_tokens": 359.0,
+  "gen_tokens": 128.0,
+  "runs": 3,
+  "modes": [
+   "distributed"
+  ],
+  "statuses": [
+   "MESSAGE_STATUS_COMPLETED"
+  ],
+  "same_text": true
+ },
+ "live-w0": {
+  "pp_tps": 157.645,
+  "tg_tps": 29.743,
+  "ttft_s": 2.285,
+  "server_ttft_s": 2.285,
+  "cold_start_s": 32.154,
+  "load_tx_mb": 0.003409,
+  "answer_net_mb": 0.022187,
+  "cpu_total_cores": 3.85,
+  "spent_mu": 222377,
+  "prompt_tokens": 359.0,
+  "gen_tokens": 128.0,
+  "runs": 3,
+  "modes": [
+   "local"
+  ],
+  "statuses": [
+   "MESSAGE_STATUS_COMPLETED"
+  ],
+  "same_text": true
+ },
+ "live-w1": {
+  "pp_tps": 163.199,
+  "tg_tps": 27.933,
+  "ttft_s": 2.21,
+  "server_ttft_s": 2.21,
+  "cold_start_s": 40.618,
+  "load_tx_mb": 981.833866,
+  "answer_net_mb": 88.885251,
+  "cpu_total_cores": 3.55,
+  "spent_mu": 522835,
+  "prompt_tokens": 359.0,
+  "gen_tokens": 128.0,
+  "runs": 3,
+  "modes": [
+   "distributed"
+  ],
+  "statuses": [
+   "MESSAGE_STATUS_COMPLETED"
+  ],
+  "same_text": true
+ },
+ "live-w2": {
+  "pp_tps": 154.112,
+  "tg_tps": 26.138,
+  "ttft_s": 2.339,
+  "server_ttft_s": 2.339,
+  "cold_start_s": 52.41,
+  "load_tx_mb": 981.93979,
+  "answer_net_mb": 95.788982,
+  "cpu_total_cores": 4.05,
+  "spent_mu": 838699,
+  "prompt_tokens": 359.0,
+  "gen_tokens": 128.0,
+  "runs": 3,
+  "modes": [
+   "distributed"
+  ],
+  "statuses": [
+   "MESSAGE_STATUS_COMPLETED"
+  ],
+  "same_text": true
+ },
+ "live-w3": {
+  "pp_tps": 151.612,
+  "tg_tps": 24.922,
+  "ttft_s": 2.378,
+  "server_ttft_s": 2.374,
+  "cold_start_s": 54.207,
+  "load_tx_mb": 982.046479,
+  "answer_net_mb": 102.721177,
+  "cpu_total_cores": 4.21,
+  "spent_mu": 1169224,
+  "prompt_tokens": 359.0,
+  "gen_tokens": 128.0,
+  "runs": 3,
+  "modes": [
+   "distributed"
+  ],
+  "statuses": [
+   "MESSAGE_STATUS_COMPLETED"
+  ],
+  "same_text": true
+ },
+ "two-w1": {
+  "pp_tps": 171.047,
+  "tg_tps": 28.37,
+  "ttft_s": 2.103,
+  "server_ttft_s": 2.103,
+  "cold_start_s": 63.762,
+  "load_tx_mb": 981.835116,
+  "answer_net_mb": 88.856032,
+  "cpu_total_cores": 3.53,
+  "spent_mu": 10644037,
+  "prompt_tokens": 359.0,
+  "gen_tokens": 128.0,
+  "runs": 3,
+  "modes": [
+   "distributed"
+  ],
+  "statuses": [
+   "MESSAGE_STATUS_COMPLETED"
+  ],
+  "same_text": true
+ },
+ "two-w2": {
+  "pp_tps": 167.632,
+  "tg_tps": 26.83,
+  "ttft_s": 2.146,
+  "server_ttft_s": 2.145,
+  "cold_start_s": 59.677,
+  "load_tx_mb": 981.931115,
+  "answer_net_mb": 95.727638,
+  "cpu_total_cores": 4.01,
+  "spent_mu": 20912604,
+  "prompt_tokens": 359.0,
+  "gen_tokens": 128.0,
+  "runs": 3,
+  "modes": [
+   "distributed"
+  ],
+  "statuses": [
+   "MESSAGE_STATUS_COMPLETED"
+  ],
+  "same_text": true
+ },
+ "two-w3": {
+  "pp_tps": 162.678,
+  "tg_tps": 25.626,
+  "ttft_s": 2.211,
+  "server_ttft_s": 2.211,
+  "cold_start_s": 84.936,
+  "load_tx_mb": 982.0441,
+  "answer_net_mb": 102.642038,
+  "cpu_total_cores": 4.35,
+  "spent_mu": 31647047,
+  "prompt_tokens": 359.0,
+  "gen_tokens": 128.0,
+  "runs": 3,
+  "modes": [
+   "distributed"
+  ],
+  "statuses": [
+   "MESSAGE_STATUS_COMPLETED"
+  ],
+  "same_text": true
+ }
+}

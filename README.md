@@ -44,8 +44,8 @@ in [BENCHMARK.md](BENCHMARK.md).
 
 | Service | id (amd64) | Size with blocks | Resources (at_init = at_most) |
 |---|---|---|---|
-| `distributed-llama` (head) | `4c0de9ec4e944583e4917eb032d3c3b6a980a7707a811ef225595af3ea665f90` | 1.4 GiB (includes the worker) | 4 vCPU, 3 GiB RAM, 4 GB disk |
-| `distributed-llama-worker` | `16f3d890e4750bcef9c8fb2b8d96bf58f5a1db3749dfd9381ee345fbfc92c894` | 112.5 MiB | 4 vCPU, 2 GiB RAM, 512 MiB disk |
+| `distributed-llama` (head), export `bffa09.celaut.bee` 1.45 GB | `bffa090f46b600718d130eef2bc7f9943529afdb49f8dcc9ed94908958e071b7` | 1.4 GiB (includes the worker) | 4 vCPU, 3 GiB RAM, 4 GB disk |
+| `distributed-llama-worker` | `6f7dca757744a44fcfb528675667795e840b245f39869041bc86857e78c43ef8` | 112.5 MiB | 4 vCPU, 2 GiB RAM, 512 MiB disk |
 
 The worker gets 2 GiB so that one worker can hold the whole model (about 1 GB of weights,
 the KV cache of a 4096 context and the compute buffers).
@@ -55,8 +55,8 @@ the KV cache of a 4096 context and the compute buffers).
 With nodo (as the operator of a node):
 
 ```sh
-nodo import 4c0de9.celaut.bee        # the release asset; it carries the worker
-nodo execute 4c0de9ec4e944583e4917eb032d3c3b6a980a7707a811ef225595af3ea665f90 \
+nodo import bffa09.celaut.bee        # the release asset (1.45 GB); it carries the worker
+nodo execute bffa090f46b600718d130eef2bc7f9943529afdb49f8dcc9ed94908958e071b7 \
     --name chat -e LLAMA_WORKERS 2
 nodo instances chat                  # the address of the slot 8080
 ```
@@ -148,7 +148,25 @@ Pack: `nodo pack head/amd64 --local` (it packs the worker as a dependency). Test
 
 See [BENCHMARK.md](BENCHMARK.md) for the method and all the numbers.
 
-BENCHMARK_SUMMARY
+Alienware (Ryzen 5 5600X, WSL2, 12 vCPU), Qwen2.5-1.5B Q4_K_M, 359-token prompt, 128
+tokens, 4 threads per instance, medians of 3 runs:
+
+| case | pp tok/s | tg tok/s | TTFT s | cold start s | MU per run |
+|---|---|---|---|---|---|
+| plain llama.cpp (llama-bench) | 162.9 | 33.1 | - | - | - |
+| host, no Celaut, head alone | 162.3 | 30.8 | 2.21 | 1.6 | - |
+| Celaut, one node, head alone | 157.6 | 29.7 | 2.29 | 32.2 | 0.22 M |
+| Celaut, one node, 1 / 2 / 3 workers | 163 / 154 / 152 | 27.9 / 26.1 / 24.9 | 2.2–2.4 | 41 / 52 / 54 | 0.5 / 0.8 / 1.2 M |
+| Celaut, two nodes (workers on a peer), 1 / 2 / 3 | 171 / 168 / 163 | 28.4 / 26.8 / 25.6 | 2.1–2.2 | 64 / 60 / 85 | 10.6 / 20.9 / 31.7 M |
+
+More workers make one conversation slower on CPUs (a pipeline: one round trip per worker
+per token), as expected from llama.cpp RPC; Celaut adds a few % at run time, ~25 s of
+instance start, and the two-node cost is mostly a build that the delegating node charges
+but nobody did. Details and findings in [BENCHMARK.md](BENCHMARK.md).
+
+From chatui (AVD, our node, 2 workers):
+
+<img src="docs/chatui-e2e.png" width="300" alt="chatui talking to distributed-llama">
 
 ## Limitations
 
