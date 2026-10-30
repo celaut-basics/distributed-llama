@@ -45,7 +45,14 @@ for i in $(seq 1 120); do ADDR=$(inst_json | field "$LABEL" ip); [ -n "$ADDR" ] 
 # The head's slot 8080: on the live node the guest address; on a container node, the
 # published address of the node (the host reaches it through the container's veth).
 echo "token=$TOKEN addr=$ADDR exec_s=$(python3 -c "print(round($T_EXEC-$T0,3))")" > "$OUT/$LABEL.info"
-su nrtest -s /bin/bash -c "$PY $D/chatbench.py $ADDR --t0 $T0 --timeout 1800" > "$OUT/$LABEL.json" 2> "$OUT/$LABEL.err"
+if [ "$NODE" = live ]; then
+  su nrtest -s /bin/bash -c "$PY $D/chatbench.py $ADDR --t0 $T0 --timeout 1800" > "$OUT/$LABEL.json" 2> "$OUT/$LABEL.err"
+else
+  # A CLI start on a container node has only its guest address, inside the container: the
+  # client runs there, with its own venv (/srv/dl, see two-node/run.sh).
+  systemd-run -M "$NODE" --wait -q -P /srv/dl/venv/bin/python /srv/dl/repo/bench/chatbench.py \
+      "$ADDR" --t0 "$T0" --timeout 1800 > "$OUT/$LABEL.json" 2> "$OUT/$LABEL.err"
+fi
 sleep 2
 kill $SAMPLER
 # The instances of this run: the head and its workers (local ones; delegated workers run

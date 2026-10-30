@@ -6,6 +6,7 @@
 #
 #   up                 two containers, nodo dev in each (~15 min)
 #   configure          A: room for the head only; B: a third of A's prices; A -> B; credit
+#   client             the chat client (bench/chatbench.py) inside each container
 #   import <bee>       import the head export (it carries the worker) on A and B
 #   prebuild <head> <worker>   B builds the worker, A builds the head (one run each, stopped)
 #   case <label> <head> <workers>   one run (../run_case.sh on node A)
@@ -42,6 +43,14 @@ configure)
   in_ct $A "nodo connect $BADDR"
   CLIENT=$(in_ct $A "nodo peers" | sed -n 's/^ *Remote Client ID: *//p' | head -1)
   in_ct $B "nodo credit_client $CLIENT 2000000000"
+  ;;
+client)
+  # The chat client inside each container: Python of nodo's runtime, grpcio 1.85.1.
+  for ct in $A $B; do
+    mkdir -p /var/lib/machines/$ct/srv/dl && rm -rf /var/lib/machines/$ct/srv/dl/repo
+    cp -a "$D/../.." /var/lib/machines/$ct/srv/dl/repo
+    in_ct $ct "/nodo/runtime/python/current/bin/python3 -m venv /srv/dl/venv && /srv/dl/venv/bin/pip install -q grpcio==1.85.1 protobuf==7.36.2 typing_extensions==4.16.0"
+  done
   ;;
 import)
   BEE=${2:?head export .bee}
