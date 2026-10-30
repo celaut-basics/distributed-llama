@@ -1,0 +1,36 @@
+{
+    "tag": "distributed-llama",
+    "architecture": "linux/amd64",
+    "init": {
+        "entry_path": ["entrypoint.sh"]
+    },
+    "envs": ["LLAMA_WORKERS", "LLAMA_MAX_TOKENS", "LLAMA_SYSTEM_PROMPT"],
+    "api": [
+        {
+            "port": 8080,
+            "transport": "tcp",
+            "protocol_stack": [
+                ["http2"],
+                ["grpc"],
+                {
+                    "tags": ["chat"],
+                    "prose": "A chat with a small open model (Qwen2.5-1.5B-Instruct, Q4_K_M) on CPUs, through the chat interface of chatui (docs/celaut/chat.md, revision 6, gRPC over h2c). The head starts LLAMA_WORKERS worker instances (default 2) and llama.cpp splits the layers of the model across them. Text only. One instance is one conversation."
+                }
+            ]
+        }
+    ],
+    "resources": {
+        "at_init": {
+            "mem_limit": 3221225472,
+            "disk_space": 4000000000,
+            "cpu_period": 100000,
+            "cpu_quota": 400000
+        },
+        "at_most": {
+            "mem_limit": 3221225472,
+            "disk_space": 4000000000,
+            "cpu_period": 100000,
+            "cpu_quota": 400000
+        }
+    }
+}

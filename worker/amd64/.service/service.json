@@ -1,0 +1,33 @@
+{
+    "tag": "distributed-llama-worker",
+    "architecture": "linux/amd64",
+    "init": {
+        "entry_path": ["entrypoint.sh"]
+    },
+    "api": [
+        {
+            "port": 50052,
+            "transport": "tcp",
+            "protocol_stack": [
+                {
+                    "tags": ["llama-rpc"],
+                    "prose": "The RPC backend of llama.cpp v0.8.0 (ggml-rpc-server, CPU). A llama-server with --rpc stores layers of a model here and computes them here. The protocol has no authentication: only the parent instance (the head of distributed-llama) can reach the port."
+                }
+            ]
+        }
+    ],
+    "resources": {
+        "at_init": {
+            "mem_limit": 2147483648,
+            "disk_space": 536870912,
+            "cpu_period": 100000,
+            "cpu_quota": 400000
+        },
+        "at_most": {
+            "mem_limit": 2147483648,
+            "disk_space": 536870912,
+            "cpu_period": 100000,
+            "cpu_quota": 400000
+        }
+    }
+}
