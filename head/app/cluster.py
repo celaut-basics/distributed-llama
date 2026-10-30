@@ -61,6 +61,7 @@ class Cluster:
         self.topup_s = env_int("WORKER_TOPUP_SECONDS", 300)
         self.start_timeout_s = env_int("WORKER_START_TIMEOUT_S", 900)
         self.ready_timeout_s = env_int("WORKER_READY_TIMEOUT_S", 300)
+        self.start_retries = env_int("WORKER_START_RETRIES", 3)
         self.load_timeout_s = env_int("LLAMA_LOAD_TIMEOUT_S", 900)
         self.server_port = SERVER_PORT
         self.mode = "starting"
@@ -115,6 +116,7 @@ class Cluster:
         meta["worker_initial_mu"] = sum(w["initial_mu"] for w in self.workers)
         meta["worker_topped_up_mu"] = sum(w["topped_up_mu"] for w in self.workers)
         meta["server_restarts"] = self.restarts
+        meta["worker_start_failures"] = sum(w.get("start_failures", 0) for w in self.workers)
         meta["load_net_rx_bytes"], meta["load_net_tx_bytes"] = self.load_net
         return meta
 
@@ -223,6 +225,7 @@ class Cluster:
     def _start_one(self, packed, n):
         initial = self.build_mu + int(self.rate * self.funded_s * 1.5)
         deadline = time.monotonic() + self.start_timeout_s
+        failures = 0
         while True:
             t = time.monotonic()
             try:
@@ -234,12 +237,19 @@ class Cluster:
                     log.warning("worker %d waits for funds: %s", n, text)
                     time.sleep(15)
                     continue
+                # Starts at the same time can fail on the node (seen on nodo dev 97906c7c:
+                # "Failed to apply default deny firewall policy for VM"): try again.
+                failures += 1
+                if failures <= self.start_retries and time.monotonic() < deadline:
+                    log.warning("worker %d did not start (try %d): %s", n, failures, text)
+                    time.sleep(2 * failures + n)
+                    continue
                 log.error("worker %d did not start: %s", n, text)
                 return None
             address = gateway.slot_address(instance, WORKER_PORT)
             log.info("worker %d started in %.1f s at %s", n, time.monotonic() - t, address)
             w = {"n": n, "token": instance.token, "address": address, "initial_mu": initial,
-                 "topped_up_mu": 0}
+                 "topped_up_mu": 0, "start_failures": failures}
             if not address:
                 self._stop_worker(w)
                 return None

@@ -103,7 +103,9 @@ def main():
                 t_done, status = t, s
                 break
         elif kind == "message_delta" and event.message_delta.message_id == answer_id:
-            if t_first is None and event.message_delta.text_append:
+            text = event.message_delta.text_append
+            # A notice of the head ("*(...)*" and a blank line) is not a token of the model.
+            if t_first is None and text and not (text.startswith("*(") and text.endswith(")*\n\n")):
                 t_first = t
         elif kind == "error":
             raise SystemExit("protocol error: %s" % event.error)
