@@ -117,6 +117,7 @@ def main():
         "cold_start_s": round(t_progress - t0, 3) if t_progress else None,
         "ttft_s": round(t_first - t_progress, 3) if t_first and t_progress else None,
         "answer_s": round(t_done - t_progress, 3) if t_done and t_progress else None,
+        "t": {"t0": t0, "up": t_up, "progress": t_progress, "first": t_first, "done": t_done},
         "meta": dict(answer.metadata),
         "text": "".join(p.text.text for p in answer.content),
     }
