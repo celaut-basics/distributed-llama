@@ -6,6 +6,7 @@
 # interface (bench/chatbench.py, as the non-root user nrtest), sample the CPU of every
 # instance, stop the workers then the head, and write results/<label>.json.
 #
+# EXTRA adds -e pairs (for example EXTRA="-e LLAMA_NGL 28").
 # <node> is "live" (the node of this host, /nodo) or the name of an nspawn container
 # (bench/two-node/). Root only for the nodo CLI; the client runs as nrtest.
 set -u
@@ -35,7 +36,7 @@ BEFORE=$(inst_json | python3 -c "import json,sys; d=json.load(sys.stdin); d=d if
 T0=$(date +%s.%N)
 n execute --name "$LABEL" --no-input \
     -e LLAMA_WORKERS "$W" -e LLAMA_IGNORE_EOS 1 -e LLAMA_MAX_TOKENS 128 \
-    -e LLAMA_TEMPERATURE 0 -e LLAMA_SEED 42 "$SID" < /dev/null > "$OUT/$LABEL.exec.log" 2>&1
+    -e LLAMA_TEMPERATURE 0 -e LLAMA_SEED 42 ${EXTRA:-} "$SID" < /dev/null > "$OUT/$LABEL.exec.log" 2>&1
 T_EXEC=$(date +%s.%N)
 TOKEN=$(inst_json | field "$LABEL" id)
 [ -n "$TOKEN" ] && n increase_deposit "$TOKEN" "$TOPUP" > "$OUT/$LABEL.topup.log" 2>&1
