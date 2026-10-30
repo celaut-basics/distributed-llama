@@ -8,9 +8,13 @@ workers and sends them their tensors over the wire. The model file is only in th
 
 Funding follows nodo #563: the build of a child comes out of the child's own initial_mu.
 So a worker gets the build that the node quotes (GetServiceEstimatedCost) plus
-WORKER_FUNDED_SECONDS of its runtime, and the head tops it up from its own balance
-(ModifyDeposit) while it runs. When the head stops, it stops its workers (the node gives
-the rest of their balance back to the head).
+WORKER_FUNDED_SECONDS of its runtime (5 minutes), and the head tops it up from its own
+balance (ModifyDeposit) every 30 seconds while it runs. A stop of the head from outside
+(`nodo kill`, a client's StopService) kills its VM at once: the head cannot stop its
+workers then, and the node does not stop them either. A worker then lives until its
+balance ends (at most WORKER_FUNDED_SECONDS), and the node marks that balance as lost
+(`refund` with `{"lost": "father_gone"}`). The caller that stops the head should stop its
+workers first (bench/run_case.sh does).
 
 If a worker cannot start, or stops later, the head stops the other workers, starts
 llama-server on its own CPUs (no `--rpc`) and tells the user in the next answer.
@@ -49,9 +53,12 @@ class Cluster:
         self.threads = env_int("LLAMA_THREADS", os.cpu_count() or 1)
         self.ctx = env_int("LLAMA_CTX", 4096)
         self.ngl = os.environ.get("LLAMA_NGL") or "999"  # layers on the workers: all
-        self.funded_s = env_int("WORKER_FUNDED_SECONDS", 900)
-        self.topup_below_s = env_int("WORKER_TOPUP_BELOW_SECONDS", 300)
-        self.topup_s = env_int("WORKER_TOPUP_SECONDS", 900)
+        # Short increments: the node does not stop the children of an instance that is
+        # killed, and the balance that a child holds when its father is gone is lost. A
+        # worker funded for 5 minutes at a time dies soon after its head.
+        self.funded_s = env_int("WORKER_FUNDED_SECONDS", 300)
+        self.topup_below_s = env_int("WORKER_TOPUP_BELOW_SECONDS", 150)
+        self.topup_s = env_int("WORKER_TOPUP_SECONDS", 300)
         self.start_timeout_s = env_int("WORKER_START_TIMEOUT_S", 900)
         self.ready_timeout_s = env_int("WORKER_READY_TIMEOUT_S", 300)
         self.load_timeout_s = env_int("LLAMA_LOAD_TIMEOUT_S", 900)
@@ -144,7 +151,6 @@ class Cluster:
                     log.exception("no worker")
                     self._set_notice("No worker could start (%s). The model runs on the head "
                                      "only." % _short(e))
-            rx0, tx0 = self.net_bytes()
             if not self._serve(addresses):
                 if addresses:
                     self._fall_back("llama-server did not load the model with the workers")
@@ -152,9 +158,6 @@ class Cluster:
                     raise RuntimeError("llama-server did not load the model")
             if self._ended.is_set():
                 return
-            rx, tx = self.net_bytes()
-            self.load_net = (rx - rx0, tx - tx0)
-            self._mark("ready")
             self._monitor()
         except Exception as e:
             log.exception("the cluster failed")
@@ -269,6 +272,7 @@ class Cluster:
                      "local" if self.want == 0 else "degraded")
         self._mark("server_spawned")
         log.info("llama-server: %s", " ".join(args))
+        rx0, tx0 = self.net_bytes()
         logfile = open("/tmp/llama-server.log", "ab")
         self.proc = subprocess.Popen(args, stdout=logfile, stderr=subprocess.STDOUT,
                                      env=dict(os.environ, LD_LIBRARY_PATH=LLAMA_BIN))
@@ -281,6 +285,9 @@ class Cluster:
                 with urllib.request.urlopen("http://127.0.0.1:%d/health" % SERVER_PORT,
                                             timeout=5) as r:
                     if r.status == 200:
+                        # The tensors that went to the workers while the model loaded.
+                        rx, tx = self.net_bytes()
+                        self.load_net = (rx - rx0, tx - tx0)
                         self._mark("model_loaded")
                         self._ready.set()
                         return True

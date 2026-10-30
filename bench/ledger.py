@@ -31,7 +31,7 @@ def main():
         if father:
             for (child,) in c.execute("SELECT id FROM delegated_instances WHERE %s = ?" % father, (head,)):
                 accounts[child] = "delegated-worker"
-    out = {"accounts": {}, "spent_mu": 0}
+    out = {"accounts": {}, "spent_mu": 0, "lost_mu": 0}
     for account, role in accounts.items():
         kinds = {}
         for kind, amount in c.execute(
@@ -40,6 +40,11 @@ def main():
             kinds[kind] = amount
         out["accounts"][account] = {"role": role, "by_kind": kinds}
         out["spent_mu"] += -sum(v for k, v in kinds.items() if k in CHARGES and v < 0)
+        # A refund to a father that is gone is lost: {"lost": "father_gone"} in its detail.
+        for (amount,) in c.execute(
+                "SELECT amount_mu FROM balance_movements WHERE account_id = ? AND kind = 'refund' "
+                "AND detail LIKE '%lost%'", (account,)):
+            out["lost_mu"] += -int(amount)
     print(json.dumps(out))
 
 
