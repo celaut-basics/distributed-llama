@@ -81,6 +81,11 @@ class ChatServiceStub:
                 request_serializer=chat__pb2.GetCapabilitiesRequest.SerializeToString,
                 response_deserializer=chat__pb2.Capabilities.FromString,
                 _registered_method=True)
+        self.AnswerSecretRequest = channel.unary_unary(
+                '/ChatService/AnswerSecretRequest',
+                request_serializer=chat__pb2.AnswerSecretRequestRequest.SerializeToString,
+                response_deserializer=chat__pb2.AnswerSecretRequestResponse.FromString,
+                _registered_method=True)
 
 
 class ChatServiceServicer:
@@ -152,6 +157,15 @@ class ChatServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def AnswerSecretRequest(self, request, context):
+        """Revisión 6 (ronda 8, borrador).
+        Responde a una petición de secreto (SecretRequest) con un valor
+        o con una omisión. El valor no entra en el historial (chat.md, 6.9).
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ChatServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -189,6 +203,11 @@ def add_ChatServiceServicer_to_server(servicer, server):
                     servicer.GetCapabilities,
                     request_deserializer=chat__pb2.GetCapabilitiesRequest.FromString,
                     response_serializer=chat__pb2.Capabilities.SerializeToString,
+            ),
+            'AnswerSecretRequest': grpc.unary_unary_rpc_method_handler(
+                    servicer.AnswerSecretRequest,
+                    request_deserializer=chat__pb2.AnswerSecretRequestRequest.FromString,
+                    response_serializer=chat__pb2.AnswerSecretRequestResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -392,6 +411,33 @@ class ChatService:
             '/ChatService/GetCapabilities',
             chat__pb2.GetCapabilitiesRequest.SerializeToString,
             chat__pb2.Capabilities.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def AnswerSecretRequest(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ChatService/AnswerSecretRequest',
+            chat__pb2.AnswerSecretRequestRequest.SerializeToString,
+            chat__pb2.AnswerSecretRequestResponse.FromString,
             options,
             channel_credentials,
             insecure,

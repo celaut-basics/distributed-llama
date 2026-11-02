@@ -9,7 +9,8 @@ none sent twice (section 6.5, step 3).
 The differences from the echo: the answer comes from the model (`llm.Backend`), as a
 stream of deltas; the service accepts text only (`accepted_mime_types` is empty, so
 `FileService` is not implemented, section 6.4); it implements `cancel_message`; a failed
-answer has `Message.error` (field 14).
+answer has `Message.error` (field 14). The service sends no secret request (section 5.6),
+so `AnswerSecretRequest` finds none.
 """
 
 import hashlib
@@ -247,6 +248,10 @@ class Chat:
             # The answer stops at the next token; the status is final now.
             self.cancelled.add(message.message_id)
             self._set_status(message, STATUS.MESSAGE_STATUS_CANCELLED)
+
+    def answer_secret(self, request):
+        """chat.md section 6.9. No message has a `SecretRequest`, so step 1 fails always."""
+        raise Reject("NOT_FOUND", "not_found", "the service sends no secret request")
 
     def subscribe(self, events, after_sequence):
         """Put the replay and `SubscriptionReady` in `events`, then the live events."""

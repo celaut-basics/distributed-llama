@@ -234,6 +234,15 @@ def test_file_service_is_unimplemented(service):
     assert e.value.code() == grpc.StatusCode.UNIMPLEMENTED and reason(e.value) == "unimplemented"
 
 
+def test_answer_secret_request_finds_no_request(service):
+    # The service sends no secret request (chat.md section 6.9, step 1; test 80).
+    request = pb.AnswerSecretRequestRequest(message_id="m", request_id="r", value="test-value")
+    with pytest.raises(grpc.RpcError) as e:
+        service.stub.AnswerSecretRequest(request, timeout=5)
+    assert e.value.code() == grpc.StatusCode.NOT_FOUND and reason(e.value) == "not_found"
+    assert "test-value" not in (e.value.details() or "")
+
+
 def test_build_messages_keeps_the_last_turns():
     turns = [("user", "x" * 9000), ("assistant", "y" * 9000), ("user", "z")]
     messages = build_messages(turns)

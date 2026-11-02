@@ -7,6 +7,10 @@ Derived from ``nodo_gateway.py`` of celaut-basics/demo-service (branch
 Every gateway RPC is a stream of bee-rpc Buffers each way, so the calls use a generic
 stream-stream method and the index tables of nodo's ``protos/gateway_bee.py``. A local
 instance is exempt from the Client of the RPCs that ask for one, so no Client is sent.
+Since nodo#599 (dev ``515d92aa``), ``StopService`` and ``ModifyDeposit`` take the Client of
+the father at index 2, but only when the father is a client: the father of a worker is this
+instance, so its token is still the only credential. ``GetMetrics`` with an instance token
+is the same as before.
 """
 import os
 import threading

@@ -62,6 +62,9 @@ class ChatService(rpc.ChatServiceServicer):
     def SetMessagePinned(self, request, context):
         return self._call(context, self.chat.set_pinned, request)
 
+    def AnswerSecretRequest(self, request, context):
+        return self._call(context, self.chat.answer_secret, request)
+
     def Connect(self, request_iterator, context):
         events = queue.Queue()
         context.add_callback(lambda: events.put(END))  # the client went away
