@@ -44,8 +44,12 @@ in [BENCHMARK.md](BENCHMARK.md).
 
 | Service | id (amd64) | Size with blocks | Resources (at_init = at_most) |
 |---|---|---|---|
-| `distributed-llama` (head), export `bffa09.celaut.bee` 1.45 GB | `bffa090f46b600718d130eef2bc7f9943529afdb49f8dcc9ed94908958e071b7` | 1.4 GiB (includes the worker) | 4 vCPU, 3 GiB RAM, 4 GB disk |
-| `distributed-llama-worker` | `6f7dca757744a44fcfb528675667795e840b245f39869041bc86857e78c43ef8` | 112.5 MiB | 4 vCPU, 2 GiB RAM, 512 MiB disk |
+| `distributed-llama` (head), export `56de2e.celaut.bee` 1.45 GB (release v2) | `56de2e9755371d0afa8f259c734a7be997d96e3c9eb4e80f8fdd54ea3cfdd5ed` | 1.4 GiB (includes the worker) | 4 vCPU, 3 GiB RAM, 4 GB disk |
+| `distributed-llama-worker` | `615f43a4301cae13947275ce3197391a686952d059c5eef8df373c21a33afdb0` | 112.5 MiB | 4 vCPU, 2 GiB RAM, 512 MiB disk |
+
+Release v2 was packed and tested with nodo `dev` a97148dd (2026-11-08): it was imported on a node
+with a clean registry, the head started 2 workers, and the chat answered in distributed mode.
+Release v1 (`bffa09`, packed on dev `97906c7c`) also still works on that dev.
 
 The worker gets 2 GiB so that one worker can hold the whole model (about 1 GB of weights,
 the KV cache of a 4096 context and the compute buffers).
@@ -55,8 +59,8 @@ the KV cache of a 4096 context and the compute buffers).
 With nodo (as the operator of a node):
 
 ```sh
-nodo import bffa09.celaut.bee        # the release asset (1.45 GB); it carries the worker
-nodo execute bffa090f46b600718d130eef2bc7f9943529afdb49f8dcc9ed94908958e071b7 \
+nodo import 56de2e.celaut.bee        # the release asset (1.45 GB); it carries the worker
+nodo execute 56de2e9755371d0afa8f259c734a7be997d96e3c9eb4e80f8fdd54ea3cfdd5ed \
     --name chat -e LLAMA_WORKERS 2
 nodo instances chat                  # the address of the slot 8080
 ```
