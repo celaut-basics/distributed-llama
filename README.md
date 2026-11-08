@@ -135,7 +135,7 @@ head/amd64/               pack root: .service/{Dockerfile,service.json,pack_conf
                           app -> ../app, worker -> ../../worker/amd64
 worker/runtime.Dockerfile, worker/amd64/   the worker
 llama/build-stage.Dockerfile   llama.cpp, the same stage in both images
-proto/chat.proto          chatui master 163e348e (chat.md revision 6, round 8)
+proto/chat.proto          chatui master 953ea99 (chat.md revision 6, round 10)
 scripts/                  gen_proto.sh (stubs), gen_dockerfiles.sh (pack-root Dockerfiles)
 bench/                    benchmark: chatbench, run_case, host_baseline, two-node/, summarize
 tests/                    the chat interface with a fake model, the layout

@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make the stubs of head/app/ from proto/chat.proto (a copy of chat.proto of
-# celaut-project/chatui master 163e348e, chat.md revision 6 round 8). Use the versions of the
+# celaut-project/chatui master 953ea99, chat.md revision 6 round 10). Use the versions of the
 # image: grpcio-tools 1.85.1 (protobuf 7.x gencode), the same as grpcio 1.85.1 and
 # protobuf 7.36.2 of head/runtime.Dockerfile.
 #

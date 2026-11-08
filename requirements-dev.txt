@@ -4,4 +4,4 @@ protobuf==7.36.2
 typing_extensions==4.16.0
 grpcio-tools==1.85.1
 pytest==9.2.0
-bee-rpc @ https://github.com/bee-rpc-protocol/bee-rpc-over-grpc-py/archive/8049fd86261c0d85445e6c27d363e0c82d5b2958.tar.gz
+bee-rpc @ https://github.com/bee-rpc-protocol/bee-rpc-over-grpc-py/archive/b250bcaca191209560be7b41b872d996e8c010d2.tar.gz

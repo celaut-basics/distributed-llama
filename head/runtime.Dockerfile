@@ -23,11 +23,11 @@ RUN sed -i \
     && useradd --uid 10001 --gid 10001 --no-create-home --shell /usr/sbin/nologin llama
 # gRPC and protobuf for the chat interface and the gateway. The stubs of app/ were made with
 # grpcio-tools 1.85.1 (scripts/gen_proto.sh). bee-rpc (the gateway protocol) is pinned by
-# the commit of its v0.0.1 tag, the one that nodo installs, from the GitHub archive (no git
+# the commit of its v0.0.3 tag, the one that nodo installs, from the GitHub archive (no git
 # in the image); --no-deps, because it asks for grpcio==1.56.0.
 RUN pip3 install --no-cache-dir grpcio==1.85.1 protobuf==7.36.2 typing_extensions==4.16.0 \
     && pip3 install --no-cache-dir --no-deps \
-        "bee-rpc @ https://github.com/bee-rpc-protocol/bee-rpc-over-grpc-py/archive/8049fd86261c0d85445e6c27d363e0c82d5b2958.tar.gz"
+        "bee-rpc @ https://github.com/bee-rpc-protocol/bee-rpc-over-grpc-py/archive/b250bcaca191209560be7b41b872d996e8c010d2.tar.gz"
 COPY --from=llama-build /opt/llama /opt/llama
 COPY --from=model /model/model.gguf /opt/model/model.gguf
 # service/ holds app/ and what the packer adds: the worker (__services__, __metadata__,
