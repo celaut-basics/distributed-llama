@@ -19,11 +19,15 @@ RUN sed -i \
 # llama.cpp v0.8.0 (2026-10-28), by commit. GGML_BACKEND_DL + GGML_CPU_ALL_VARIANTS: one
 # CPU backend per x86-64 level (sse42 ... zen4, sapphirerapids), the best one is chosen at
 # run time, so the image runs on any x86-64 node and uses AVX2/AVX-512 where it exists.
+# On arm64 the variants are armv8.0 ... armv8.6 (+DOTPROD, FP16, SVE, I8MM, SVE2). The two
+# armv9.2 variants (SME) are removed before cmake: GCC 12 of bookworm does not know
+# `-march=armv9.2-a+...+sme`. The sed changes nothing on amd64.
 # GGML_RPC: the RPC backend (llama-server --rpc) and ggml-rpc-server.
 ARG LLAMA_COMMIT=8642541b255bfb5dc39cd351a178be09013a55d6
 RUN git init -q /src && cd /src \
     && git fetch -q --depth 1 https://github.com/ggml-org/llama.cpp.git "${LLAMA_COMMIT}" \
     && git checkout -q FETCH_HEAD \
+    && sed -i '/ggml_add_cpu_backend_variant(armv9\.2_[12] /d' ggml/src/CMakeLists.txt \
     && cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DGGML_RPC=ON -DGGML_NATIVE=OFF \
         -DGGML_BACKEND_DL=ON -DGGML_CPU_ALL_VARIANTS=ON -DBUILD_SHARED_LIBS=ON \
         -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_CURL=OFF -DLLAMA_OPENSSL=OFF \
