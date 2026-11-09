@@ -1,0 +1,17 @@
+{
+  "service_dependencies_directory": "__services__",
+  "metadata_dependencies_directory": "__metadata__",
+  "blocks_directory": "__block__",
+  "zip": false,
+  "dependencies": {
+    "WORKER": "worker"
+  },
+  "dependencies_env": true,
+  "include": [
+    "app"
+  ],
+  "ignore": [
+    "__pycache__/",
+    "*.pyc"
+  ]
+}

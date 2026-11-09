@@ -3,7 +3,8 @@ worker, and the reading of ``/__config__``.
 
 Derived from ``nodo_gateway.py`` of celaut-basics/demo-service (branch
 ``feat/new-benchmarks``). The messages come from ``celaut.binpb``, a copy of nodo's
-``protos/celaut_doc.binpb`` (dev ``a97148dd``), loaded into a PRIVATE descriptor pool.
+``protos/celaut_doc.binpb`` (PR #635 ``eda0a9b3``, the #538 workload shape), loaded
+into a PRIVATE descriptor pool.
 Every gateway RPC is a stream of bee-rpc Buffers each way, so the calls use a generic
 stream-stream method and the index tables of nodo's ``protos/gateway_bee.py``. A local
 instance is exempt from the Client of the RPCs that ask for one, so no Client is sent.
