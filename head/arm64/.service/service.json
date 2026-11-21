@@ -4,6 +4,7 @@
     "init": {
         "entry_path": ["entrypoint.sh"]
     },
+    "uses_gateway": true,
     "envs": ["LLAMA_WORKERS", "LLAMA_MAX_TOKENS", "LLAMA_SYSTEM_PROMPT"],
     "api": [
         {
