@@ -135,9 +135,9 @@ loaded, and the boot marks.
 ```
 head/app/                 the head (chat.md rev 6 server, llama-server client, workers, gateway)
 head/runtime.Dockerfile   the head image after the build stage
-head/amd64/               pack root: .service/{Dockerfile,service.json,pack_config.json},
-                          app -> ../app, worker -> ../../worker/amd64
-worker/runtime.Dockerfile, worker/amd64/   the worker
+head/amd64/, head/arm64/  pack roots: .service/{Dockerfile,service.json,pack_config.json},
+                          app -> ../app, worker -> ../../worker/<arch>
+worker/runtime.Dockerfile, worker/amd64/, worker/arm64/   the worker
 llama/build-stage.Dockerfile   llama.cpp, the same stage in both images
 proto/chat.proto          chatui master 953ea99 (chat.md revision 6, round 10)
 scripts/                  gen_proto.sh (stubs), gen_dockerfiles.sh (pack-root Dockerfiles)
@@ -145,7 +145,8 @@ bench/                    benchmark: chatbench, run_case, host_baseline, two-nod
 tests/                    the chat interface with a fake model, the layout
 ```
 
-Pack: `nodo pack head/amd64 --local` (it packs the worker as a dependency). Tests:
+Pack: `nodo pack head/amd64 --local` or `nodo pack head/arm64 --local` (it packs the worker as
+a dependency). Tests:
 `python3 -m pytest tests` with `requirements-dev.txt`.
 
 ## Benchmark
@@ -174,7 +175,7 @@ From chatui (AVD, our node, 2 workers):
 
 ## Limitations
 
-- CPU only, amd64 only. The model is small (1.5 B parameters, Q4_K_M): the point is the
+- CPU only. The model is small (1.5 B parameters, Q4_K_M): the point is the
   behaviour of Celaut, not the quality of the answers.
 - llama.cpp RPC is a pipeline: the layers of one token run on one worker after the other, so
   more workers add memory, not speed, for one conversation. Each token costs one round trip
@@ -190,7 +191,6 @@ From chatui (AVD, our node, 2 workers):
 
 - GPU workers (`GGML_CUDA` worker variant) and a head that places layers by the memory and
   speed that each worker reports.
-- arm64 pack roots (the Dockerfiles have no amd64-only step; the CPU variants differ).
 - Workers across several peers, and a larger model that does not fit one node.
 - An authenticated RPC transport between head and workers (a TLS or WireGuard wrapper, or a
   nodo tunnel), before delegation over untrusted networks.
